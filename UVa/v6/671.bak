@@ -1,0 +1,112 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+#define MAX 30
+
+char cpy[10005][20],word[10005][20],query[20];
+
+int sort(const void *p,const void *q)
+{
+	return strcmp((char*)p,(char*)q);
+}
+
+int findcost(char *s1,char *s2,int m,int n)
+{
+	char a[MAX],b[MAX];
+	int i,j,dc,cc,ic,c,cost[MAX][MAX];
+	for(i=0;i<=m;++i)
+	{
+		a[i+1]=s1[i];
+	}
+	for(i=0;i<=n;++i)
+	{
+		b[i+1]=s2[i];
+	}
+	for(i=0;i<=m;++i)
+	{
+		cost[i][0]=i;
+	}
+	for(i=0;i<=n;++i)
+	{
+		cost[0][i]=i;
+	}
+	for(i=1;i<=m;++i)
+	{
+		for(j=1;j<=n;++j)
+		{
+			dc=cost[i-1][j]+1;
+			if(a[i]==b[j])
+			{
+				cc=cost[i-1][j-1];
+			}
+			else
+			{
+				cc=cost[i-1][j-1]+1;
+			}
+			ic=cost[i][j-1]+1;
+			if(dc<cc)
+			{
+				c=dc;
+			}
+			else
+			{
+				c=cc;
+			}
+			if(c>ic)
+			{
+				c=ic;
+			}
+			cost[i][j]=c;
+		}
+	}
+	return cost[m][n];
+}
+
+int main()
+{
+	/*freopen("..//out//671.in","rt",stdin);
+	freopen("..//out//out","wt",stdout);*/
+	int *f,i,n,d,cost,len[10000],lenq,kase,flag;
+	scanf("%d",&kase);
+	for(;kase>0;--kase)
+	{
+		for(n=0;;++n)
+		{
+			scanf("%s",word[n]);
+			if(word[n][0]=='#') break;
+			strcpy(cpy[n],word[n]);
+			len[n]=strlen(word[n]);
+		}
+		qsort(cpy,n,sizeof(cpy[0]),sort);
+		for(;;)
+		{
+			scanf("%s",query);
+			if(query[0]=='#') break;
+			flag=0;
+			f=(int *)bsearch(query,cpy,n,sizeof(cpy[0]),(int(*)(const void *,const void *))sort);
+			if(f)
+			{
+				printf("%s is correct\n",query);
+				flag=1;
+			}
+			if(flag==0)
+			{
+				printf("%s:",query);
+				lenq=strlen(query);
+				for(i=0;i<n;++i)
+				{
+					d=lenq-len[i];
+					if(d>=-1 && d<=1)
+					{
+						cost=findcost(word[i],query,len[i],lenq);
+						if(cost==1) printf(" %s",word[i]);
+					}
+				}
+				printf("\n");
+			}
+		}
+		if(kase>1) printf("\n");
+	}
+	return 0;
+}
